@@ -7,4 +7,6 @@ const conection = await mysql.createConnection({
     database:'Prova_Bruno_F'
 })
 
+console.log('Conectado ao banco de dados!')
+
 export {conection}

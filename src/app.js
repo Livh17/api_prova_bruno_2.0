@@ -6,4 +6,4 @@ api.use(express.json())
 
 Rotas(api)
 
-api.listen(5010, () => console.log('API subiu'))
+api.listen(5010, () => console.log('....... API rodando na porta 5010 .......'))

@@ -1,9 +1,26 @@
 import Router from 'express'
 import {getAuthentication} from '../utils/jwt.js'
-import { buscarSalaPorId, inserirSala } from '../repository/SalaRepository'
+import { buscarSalaPorId, inserirSala_inserirPermissao } from '../repository/SalaRepository'
 
 const endpoints = Router()
 const autenticador = getAuthentication()
+
+
+
+endpoints.post('/sala', autenticador, async (resp,req) =>{
+    let usuarioID = req.user.id 
+    let nome = req.body
+    let aprovado = true
+    let credenciais = await inserirSala_inserirPermissao(nome, usuarioID, aprovado)
+
+    if(!credenciais){
+        resp.status(401).send({ erro: 'Invalido!'})
+    }
+    else {
+        resp.send({salaId:credenciais})
+    }
+})
+
 
 
 endpoints.get('/sala/:id', autenticador, async (resp, req) =>{
@@ -15,18 +32,6 @@ endpoints.get('/sala/:id', autenticador, async (resp, req) =>{
 })
 
 
-endpoints.post('/sala/:sala/entrar', autenticador, async (req, resp) => {
 
 
-endpoints.post('/sala', autenticador, async (resp,req) =>{
-    let usuarioID = req.user.id 
-    let nome = req.body.nome
-    let credenciais = await inserirSala(nome, usuarioID)
 
-    if(!credenciais){
-        resp.status(401).send({ erro: 'Usuario não tem permissão!'})
-    }
-    else {
-        resp.send('')
-    }
-})
