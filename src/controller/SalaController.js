@@ -1,32 +1,36 @@
 import Router from 'express'
 import {getAuthentication} from '../utils/jwt.js'
-import { buscarSalaPorId, inserirSala_inserirPermissao } from '../repository/SalaRepository'
+import { buscarSala, criarSala } from '../repository/SalaRepository.js'
 
 const endpoints = Router()
 const autenticador = getAuthentication()
 
 
 
-endpoints.post('/sala', autenticador, async (resp,req) =>{
-    let usuarioID = req.user.id 
-    let nome = req.body
+endpoints.post('/sala', autenticador, async (req,resp) =>{
+    let nome = req.body.nome
+    let userID = req.user.id
     let aprovado = true
-    let credenciais = await inserirSala_inserirPermissao(nome, usuarioID, aprovado)
 
-    if(!credenciais){
-        resp.status(401).send({ erro: 'Invalido!'})
+    if (!nome){
+        resp.status(400).send({mensagem:'Nome da sala obrigatório!'})
     }
-    else {
-        resp.send({salaId:credenciais})
+    else if (!userID){
+        resp.status(400).send({mensagem:'Usuário não identificado!'})
+    }
+    else{
+        let salaId = await criarSala(nome, userID, aprovado)
+        resp.send({salaId: salaId})
     }
 })
 
 
 
-endpoints.get('/sala/:id', autenticador, async (resp, req) =>{
-    let id = req.params.id
 
-    let registro = await buscarSalaPorId(id)
+
+
+endpoints.get('/sala', autenticador, async (req, resp) =>{
+    let registro = await buscarSala()
 
     resp.send(registro)
 })
@@ -34,4 +38,6 @@ endpoints.get('/sala/:id', autenticador, async (resp, req) =>{
 
 
 
+
+export default endpoints
 

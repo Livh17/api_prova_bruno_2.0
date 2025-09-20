@@ -1,41 +1,35 @@
 import { conection } from './conection.js';
 
 
+export async function criarSala(nome, usuario_id,aprovado) {
+    const comando =`
+    INSERT INTO sala (nome, usuario_id) VALUES (?, ?);`
 
+    const [registro1]= await conection.query(comando,[
+        nome,
+        usuario_id
+    ])
 
-export async function inserirSala_inserirPermissao(nome, usuarioId, aprovado) {
-    const comando1 = `INSERT INTO sala (nome, criador_id) 
-    VALUES (?, ?);
-    `
-    const [info] = await conection.query(comando1, [
-    nome.nome, usuarioId])
+    const sala_id = registro1.insertId
 
-    const salaId = info.insertId
+    const comando1 = `
+    INSERT INTO salaPermissao (sala_id, usuario_id, aprovado) VALUES (?, ?, TRUE);`
 
-    
+    const [registro2] = await conection.query(comando1,[
+        sala_id,
+        usuario_id,
+        aprovado
+    ])
 
-
-    const comando2 = `
-    INSERT INTO salaPermissao (sala_id, usuario_id, aprovado)  
-    VALUES (?, ?, TRUE);
-    `
-    const [info2] = await conection.query(comando2, [
-    insertId, usuarioId], aprovado)
-       return salaId
+    return sala_id
 }
 
 
 
-
-
-
-
-export async function buscarSalaPorId(Id) {
+export async function buscarSala() {
     const comando = `
     select *from sala
-    where sala_id = ?`
-
-    const [registro] = await conection.query(comando,[Id])
-    return registro
+`
+    const [registro] = await conection.query(comando);
+    return registro;
 }
-
