@@ -12,20 +12,37 @@ endpoints.post('/chat/:sala', autenticador, async (req, resp) => {
     const usuarioId = req.user.id
     const mensagem = req.body.mensagem
 
-    if(!mensagem) {error: 'Mensagem é obrigatoria'}
+    if(!mensagem) {resp.send({mensagem: 'Mensagem é obrigatoria'})}
 
     const permitido = verificarPermissaoSala(salaId, usuarioId)
     if(!permitido) {
         resp.status(400).send({mensagem: 'Você não tem permissão para enviar mensagens'})
     }
-    else {
+
         await inserirMensagem(usuarioId, salaId, mensagem)
-        resp.send({mensagem: 'Mensagem enviada com sucesso'
+        resp.send({mensagem: 'Mensagem enviada com sucesso'})
+    
+ })
+
+
+
+
+
+
+
+
+endpoints.get('/chat/:sala/mensagens', autenticador, async (req, resp) => {
+    let salaId = req.params.sala
+    let usuarioId = req.user.id
+
+    const permitido = await verificarPermissaoSala(salaId, usuarioId)
+
+    if(!permitido) {
+        resp.status(400).send({mensagem: 'Você não tem permissão para ver as mensagens'})
     }
- });
 
-
-endpoints.get('/chat/:sala', autenticador, async (req, resp) => {
+    const mensagens = await listarMensagensPorSala(salaId)
+    resp.send(mensagens)
     
 });
 
